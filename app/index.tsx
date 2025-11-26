@@ -1,14 +1,15 @@
+import "@/global.css";
 import { useState } from "react";
 import {
+  Keyboard,
+  SafeAreaView,
   Text,
-  View,
   TextInput,
   TouchableOpacity,
-  SafeAreaView,
-  Keyboard,
   TouchableWithoutFeedback,
+  View,
 } from "react-native";
-import "@/global.css"
+
 
 // Definimos los tipos para los errores del formulario
 interface FormErrors {
