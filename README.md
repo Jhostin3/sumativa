@@ -12,7 +12,7 @@ Android previews are defined as a `workspace.onStart` hook and started as a vsco
 
 Note, if you can't find the task, either:
 - Rebuild the environment (using command palette: `IDX: Rebuild Environment`), or
-- Run `npm run android -- --tunnel` command manually run android and see the output in your terminal. The device should pick up this new command and switch to start displaying the output from it.
+- Run `npm run web -- --tunnel` command manually run android and see the output in your terminal. The device should pick up this new command and switch to start displaying the output from it.
 
 In the output of this command/task, you'll find options to open the app in a
 
@@ -34,8 +34,6 @@ When you're ready, run:
 
 ```bash
 npm run reset-project
-```
-
 This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
 ## Learn more
