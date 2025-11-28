@@ -1,6 +1,7 @@
 import { createContext, PropsWithChildren, useCallback, useContext, useMemo, useState } from "react";
 import { createTask, deleteTask, getTasks, updateTask } from "@/lib/api";
 import { Task } from "@/lib/types";
+import { handleApiError } from "@/lib/handleApiError";
 
 interface TasksContextValue {
   tasks: Task[];
@@ -22,26 +23,48 @@ export function TasksProvider({ children }: PropsWithChildren) {
     try {
       const response = await getTasks();
       setTasks(response);
+    } catch (error) {
+      const friendlyMessage = handleApiError(error instanceof Error ? error : new Error(String(error)));
+      console.error(friendlyMessage);
+      throw new Error(friendlyMessage);
     } finally {
       setIsLoading(false);
     }
   }, []);
 
   const addTask = useCallback(async (data: Omit<Task, "id">) => {
-    const created = await createTask(data);
-    setTasks((prev) => [created, ...prev]);
-    return created;
+    try {
+      const created = await createTask(data);
+      setTasks((prev) => [created, ...prev]);
+      return created;
+    } catch (error) {
+      const friendlyMessage = handleApiError(error instanceof Error ? error : new Error(String(error)));
+      console.error(friendlyMessage);
+      throw new Error(friendlyMessage);
+    }
   }, []);
 
   const updateTaskInState = useCallback(async (id: string, data: Partial<Task>) => {
-    const updated = await updateTask(id, data);
-    setTasks((prev) => prev.map((task) => (task.id === id ? updated : task)));
-    return updated;
+    try {
+      const updated = await updateTask(id, data);
+      setTasks((prev) => prev.map((task) => (task.id === id ? updated : task)));
+      return updated;
+    } catch (error) {
+      const friendlyMessage = handleApiError(error instanceof Error ? error : new Error(String(error)));
+      console.error(friendlyMessage);
+      throw new Error(friendlyMessage);
+    }
   }, []);
 
   const removeTask = useCallback(async (id: string) => {
-    await deleteTask(id);
-    setTasks((prev) => prev.filter((task) => task.id !== id));
+    try {
+      await deleteTask(id);
+      setTasks((prev) => prev.filter((task) => task.id !== id));
+    } catch (error) {
+      const friendlyMessage = handleApiError(error instanceof Error ? error : new Error(String(error)));
+      console.error(friendlyMessage);
+      throw new Error(friendlyMessage);
+    }
   }, []);
 
   const value = useMemo(
