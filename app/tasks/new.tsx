@@ -1,7 +1,8 @@
-import { SafeAreaView, Text, View } from "react-native";
 import { router } from "expo-router";
 import TaskForm from "@/components/TaskForm";
 import { useTasks } from "@/contexts/TasksContext";
+import { ScreenContainer } from "@/components/ui/ScreenContainer";
+import { Card } from "@/components/ui/Card";
 
 export default function NewTaskScreen() {
   const { addTask } = useTasks();
@@ -12,16 +13,18 @@ export default function NewTaskScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-100">
-      <View className="flex-1 px-4 py-6">
-        <Text className="text-2xl font-bold text-gray-900 mb-6">Crear nueva tarea</Text>
+    <ScreenContainer
+      title="Crear nueva tarea"
+      subtitle="Completa la información para agendar un nuevo pendiente."
+    >
+      <Card>
         <TaskForm
           initialTitle=""
           initialDescription=""
           submitLabel="Guardar"
           onSubmit={handleSubmit}
         />
-      </View>
-    </SafeAreaView>
+      </Card>
+    </ScreenContainer>
   );
 }
