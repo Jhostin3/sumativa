@@ -7,7 +7,7 @@ interface TasksContextValue {
   isLoading: boolean;
   loadTasks: () => Promise<void>;
   addTask: (data: Omit<Task, "id">) => Promise<Task>;
-  editTask: (id: string, data: Partial<Task>) => Promise<Task>;
+  updateTask: (id: string, data: Partial<Task>) => Promise<Task>;
   removeTask: (id: string) => Promise<void>;
 }
 
@@ -33,7 +33,7 @@ export function TasksProvider({ children }: PropsWithChildren) {
     return created;
   }, []);
 
-  const editTask = useCallback(async (id: string, data: Partial<Task>) => {
+  const updateTaskInState = useCallback(async (id: string, data: Partial<Task>) => {
     const updated = await updateTask(id, data);
     setTasks((prev) => prev.map((task) => (task.id === id ? updated : task)));
     return updated;
@@ -45,8 +45,8 @@ export function TasksProvider({ children }: PropsWithChildren) {
   }, []);
 
   const value = useMemo(
-    () => ({ tasks, isLoading, loadTasks, addTask, editTask, removeTask }),
-    [tasks, isLoading, loadTasks, addTask, editTask, removeTask],
+    () => ({ tasks, isLoading, loadTasks, addTask, updateTask: updateTaskInState, removeTask }),
+    [tasks, isLoading, loadTasks, addTask, updateTaskInState, removeTask],
   );
 
   return <TasksContext.Provider value={value}>{children}</TasksContext.Provider>;

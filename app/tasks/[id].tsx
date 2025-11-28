@@ -9,7 +9,7 @@ import { PrimaryButton } from "@/components/ui/PrimaryButton";
 
 export default function TaskDetailsScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
-  const { tasks, editTask: updateTask, removeTask } = useTasks();
+  const { tasks, updateTask, removeTask } = useTasks();
 
   const task = useMemo(() => tasks.find((item) => item.id === id), [tasks, id]);
 
