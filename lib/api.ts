@@ -1,60 +1,48 @@
 import { Task } from "./types";
 
-// Cuando migremos a json-server, podemos configurar la base URL aquí.
-// const BASE_URL = "http://localhost:3000";
-// Ejemplo:
-// const response = await fetch(`${BASE_URL}/tasks`);
-// const tasksFromServer: Task[] = await response.json();
+const BASE_URL = "http://localhost:3000";
+// Si despliegas tu JSON-Server (por ejemplo, en Render o Vercel), actualiza BASE_URL con la nueva URL.
+const TASKS_ENDPOINT = `${BASE_URL}/tasks`;
 
-let tasks: Task[] = [
-  {
-    id: "1",
-    title: "Revisar correos",
-    description: "Responder los mensajes urgentes antes del mediodía",
-  },
-  {
-    id: "2",
-    title: "Planificar sprint",
-    description: "Definir alcance y tareas para la próxima iteración",
-  },
-];
+async function handleResponse<T>(response: Response): Promise<T> {
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(message || "Ocurrió un error al comunicarse con el servidor.");
+  }
 
-const simulateDelay = <T>(result: T, delay = 350) =>
-  new Promise<T>((resolve) => setTimeout(() => resolve(result), delay));
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
+  return (await response.json()) as T;
+}
 
 export async function getTasks(): Promise<Task[]> {
-  return simulateDelay([...tasks]);
+  const response = await fetch(TASKS_ENDPOINT);
+  return handleResponse<Task[]>(response);
 }
 
 export async function createTask(data: Omit<Task, "id">): Promise<Task> {
-  const newTask: Task = {
-    id: Date.now().toString(),
-    ...data,
-  };
-  tasks = [newTask, ...tasks];
-  return simulateDelay(newTask);
+  const response = await fetch(TASKS_ENDPOINT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+
+  return handleResponse<Task>(response);
 }
 
 export async function updateTask(id: string, data: Partial<Task>): Promise<Task> {
-  const index = tasks.findIndex((task) => task.id === id);
+  const response = await fetch(`${TASKS_ENDPOINT}/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
 
-  if (index === -1) {
-    throw new Error(`La tarea con id ${id} no existe.`);
-  }
-
-  const updatedTask: Task = { ...tasks[index], ...data, id: tasks[index].id };
-  tasks[index] = updatedTask;
-
-  return simulateDelay(updatedTask);
+  return handleResponse<Task>(response);
 }
 
 export async function deleteTask(id: string): Promise<void> {
-  const exists = tasks.some((task) => task.id === id);
-
-  if (!exists) {
-    throw new Error(`La tarea con id ${id} no existe.`);
-  }
-
-  tasks = tasks.filter((task) => task.id !== id);
-  await simulateDelay(undefined);
+  const response = await fetch(`${TASKS_ENDPOINT}/${id}`, { method: "DELETE" });
+  await handleResponse<void>(response);
 }
